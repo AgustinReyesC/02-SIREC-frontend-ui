@@ -12,7 +12,7 @@ interface AuthState {
     token: string | null,
     user: User | null,
     isAuthenticated: boolean,
-    login: (token: string, user: User) => void,
+    login: (token: string, user: User) => boolean,
     logout: () => void,
 }
 
@@ -22,14 +22,22 @@ export const useAuthStore = create<AuthState>()(
             token: null,
             user: null,
             isAuthenticated: false,
-            login: ( token, user ) => 
-                set({token, user, isAuthenticated: true}),
-            logout: () => 
-                set({token: null, user: null, isAuthenticated: false})
+            login: ( token, user ) => {
+                set({token, user, isAuthenticated: true});
+                return true;
+            },  
+            logout: () => {
+                set({
+                    isAuthenticated: false,
+                    token: null,
+                    user: null,
+                })
+
+                localStorage.removeItem('token')
+            }
         }),
         {
             name: 'sirec-auth',
         }
-
     )
 )

@@ -1,14 +1,23 @@
 import { Outlet } from 'react-router-dom'
-import Navbar from './Navbar'
+import {NavBar} from './general/NavBar'
 
 function Layout() {
+  const links = [
+    {
+      to: '/',
+      label: 'Inicio'
+    },
+    {
+      to: '/Different',
+      label: 'Different'
+    }
+  ]
+  
   return (
-    <div className="min-h-screen bg-paper flex flex-col">
-      <Navbar />
-      <main className="flex-1">
-        <Outlet />
-      </main>
-    </div>
+    <>
+      <NavBar links={links} />
+      <Outlet></Outlet>
+    </>
   )
 }
 
