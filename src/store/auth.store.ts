@@ -4,6 +4,8 @@ import { persist } from "zustand/middleware"
 interface User {
     uid: number,
     mail: string,
+    name?: string,
+    /** Solo el rol con que se inició sesión (ej. ['author']). */
     roles: string[],
     isOwner?: boolean
 }

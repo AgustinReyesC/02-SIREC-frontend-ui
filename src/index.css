@@ -7,7 +7,24 @@
   --color-brass: #A8843F;
   --color-ink-text: #20242E;
 
+  /* Estilo general de SIREC (barra azul, logo dorado, tarjetas blancas) */
+  --color-sirec-navy: #113a5c;
+  --color-sirec-navy-dark: #0c2b45;
+  --color-sirec-gold: #b39a3a;
+  --color-sirec-surface: #f6f7f9;
+  --color-sirec-text: #1b1f24;
+  --color-sirec-muted: #55606b;
+
   --font-display: "Fraunces", serif;
   --font-body: "Inter", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
+  --font-sirec: Verdana, Geneva, Tahoma, sans-serif;
+  --font-logo: Georgia, "Times New Roman", serif;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-sirec-surface);
+  color: var(--color-sirec-text);
+  font-family: var(--font-sirec);
 }

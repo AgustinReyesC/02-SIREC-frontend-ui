@@ -1,11 +1,12 @@
 import '../styles/Login.css'
-import { useEffect, useRef, useState } from 'react'
+import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import RoleSelector from '../components/LoginPage/RoleSelector'
 import LoginFields from '../components/LoginPage/auth_forms/login/LoginFields'
-import { rolesAsDictionary } from '../assets/constants'
+import { type LoginRole, rolesAsDictionary } from '../assets/constants'
+import { loginErrorMessage, loginRequest } from '../lib/auth.api'
 import { useAuthStore } from '../store/auth.store'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 function Login() {
     const [isHovered, setIsHovered] = useState(false)
@@ -23,35 +24,33 @@ function Login() {
         return () => window.clearTimeout(timeout)
     }, [])
 
-    const [selectedRole, setSelectedRole] = useState(rolesAsDictionary.AUTHOR)
-    // const {
-    //     role,
-    //     loading,
-    //     error,
-    //     retrieveRoleForLogin,
-    // } = useRetrieveRoleForLogin() //not yet
-
-    // async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    //     event.preventDefault()
-
-    //     const formData = new FormData(event.currentTarget)
-
-    //     await retrieveRoleForLogin({
-    //         email: String(formData.get('email')),
-    //         password: String(formData.get('password')),
-    //         role: selectedRole,
-    //     })
-    // } //not yet
-
+    const location = useLocation()
+    const [selectedRole, setSelectedRole] = useState<LoginRole>(rolesAsDictionary.AUTHOR)
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const { login } = useAuthStore()
 
-    const handleLogin = () => {
-        login('token', {
-            uid: 10,
-            mail: 'pruebaSirec@gmail.com',
-            roles: ['autor', 'revisor'],
-            isOwner: false,
-        })
+    // POST /auth/login: el backend valida correo, contraseña y que tenga el rol elegido
+    async function handleLogin(event: FormEvent<HTMLFormElement>) {
+        const formData = new FormData(event.currentTarget)
+        setLoading(true)
+        setError(null)
+        try {
+            const { accessToken, user } = await loginRequest({
+                mail: String(formData.get('email') ?? ''),
+                password: String(formData.get('password') ?? ''),
+                role: selectedRole,
+            })
+            login(accessToken, { uid: user.uid, mail: user.mail, name: user.name, roles: [user.role] })
+
+            const from = (location.state as { from?: string } | null)?.from
+            const home = user.role === rolesAsDictionary.AUTHOR ? '/proyectos' : '/'
+            navigate(from ?? home, { replace: true })
+        } catch (loginError) {
+            setError(loginErrorMessage(loginError))
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -85,12 +84,10 @@ function Login() {
                     </div>
 
                     <div className="mb-6 rounded-xl p-3">
-                        <RoleSelector onRoleChange={setSelectedRole} />
+                        <RoleSelector value={selectedRole} onRoleChange={setSelectedRole} disabled={loading} />
                     </div>
 
-                    <LoginFields onSubmit={handleLogin} />
-                    {/* {error && <p className="text-red-900">{error}</p>}
-                    {role && <p>Rol detectado: {role}</p>} */}
+                    <LoginFields onSubmit={handleLogin} loading={loading} error={error} />
 
 
 

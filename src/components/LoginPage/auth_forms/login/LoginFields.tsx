@@ -1,20 +1,19 @@
 import { type FormEvent, useState } from 'react'
 import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
 
 interface LoginFieldsProps {
     onSubmit: (event: FormEvent<HTMLFormElement>) => void | Promise<void>
     loading?: boolean
+    error?: string | null
 }
 
-function LoginFields({ onSubmit, loading = false }: LoginFieldsProps) {
+function LoginFields({ onSubmit, loading = false, error = null }: LoginFieldsProps) {
     const [showPassword, setShowPassword] = useState(false)
-    const navigate = useNavigate()
 
+    // A dónde ir después del login lo decide la página, no el formulario
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         await onSubmit(event)
-        navigate('/')
     }
 
     return (
@@ -96,6 +95,12 @@ function LoginFields({ onSubmit, loading = false }: LoginFieldsProps) {
                 </div>
             </div>
 
+            {error && (
+                <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                    {error}
+                </p>
+            )}
+
             <motion.button
                 type="submit"
                 disabled={loading}
@@ -104,7 +109,7 @@ function LoginFields({ onSubmit, loading = false }: LoginFieldsProps) {
                 transition={{ type: 'spring', stiffness: 400, damping: 24 }}
                 className="w-full rounded-xl bg-slate-950 px-4 py-3.5 font-mono text-xs font-semibold uppercase tracking-[0.18em] text-white shadow-lg shadow-slate-950/15 transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-950/20 disabled:cursor-not-allowed disabled:opacity-50"
             >
-                {loading ? 'Consultando...' : 'Iniciar sesión'}
+                {loading ? 'Entrando...' : 'Iniciar sesión'}
             </motion.button>
         </motion.form>
     )

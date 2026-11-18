@@ -22,5 +22,7 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  /* Página de pruebas que ya no se usa (se conserva en el repo) */
+  "exclude": ["src/pages/Home.tsx"]
 }

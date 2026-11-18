@@ -1,40 +1,34 @@
-import { useState } from 'react'
-import {roles} from '../../assets/constants'
-
-export type Role = typeof roles[number]
+import { roles, type LoginRole } from '../../assets/constants'
 
 interface RoleSelectorProps {
-    onRoleChange?: (role: Role) => void
+    value: LoginRole
+    onRoleChange: (role: LoginRole) => void
+    disabled?: boolean
 }
 
-function RoleSelector({ onRoleChange }: RoleSelectorProps) {
-    const [selectedRole, setSelectedRole] = useState<Role>('revisor')
-
-    function selectRole(role: Role) {
-        setSelectedRole(role)
-        onRoleChange?.(role)
-    }
-
+/** Rol con el que se entra; el backend valida que el usuario lo tenga. */
+function RoleSelector({ value, onRoleChange, disabled = false }: RoleSelectorProps) {
     return (
         <div
-            className="flex w-full rounded-full bg-amber-50 p-2  shadow-xl"
-            role="tablist"
-            aria-label="Seleccionar rol"
+            className="flex w-full flex-wrap rounded-full bg-amber-50 p-2 shadow-xl"
+            role="radiogroup"
+            aria-label="Entrar como"
         >
             {roles.map((role) => (
                 <button
-                    key={role}
+                    key={role.value}
                     type="button"
-                    role="tab"
-                    aria-selected={selectedRole === role}
-                    onClick={() => selectRole(role)}
-                    className={`flex-1 rounded-full px-3 py-2 font-sans text-[15px] uppercase tracking-wider transition-colors m-1 ${
-                        selectedRole === role
+                    role="radio"
+                    aria-checked={value === role.value}
+                    disabled={disabled}
+                    onClick={() => onRoleChange(role.value)}
+                    className={`m-1 flex-1 cursor-pointer rounded-full px-3 py-2 font-sans text-[13px] uppercase tracking-wider transition-colors sm:text-[15px] ${
+                        value === role.value
                             ? 'bg-[#102a43] text-white shadow-sm'
-                            : 'text-[#102a4370] hover:text-[#102a43ff] hover:bg-[#102a4320]'
+                            : 'text-[#102a4370] hover:bg-[#102a4320] hover:text-[#102a43ff]'
                     }`}
                 >
-                    {role}
+                    {role.label}
                 </button>
             ))}
         </div>

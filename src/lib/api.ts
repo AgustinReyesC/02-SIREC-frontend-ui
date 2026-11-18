@@ -16,7 +16,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if(error.response?.status === 401) {
+        // Un 401 del login es "contraseña incorrecta", no una sesión vencida
+        const isLoginRequest = error.config?.url?.endsWith('/auth/login')
+        if(error.response?.status === 401 && !isLoginRequest) {
             useAuthStore.getState().logout();
             window.location.href = '/login'
         }
